@@ -13,6 +13,7 @@ buffer3		BYTE "請輸入Random Number的lowerbound:", 0
 buffer4		BYTE "請輸入Random Number的upperbound:", 0
 buffer5		BYTE ",", 0
 buffer6		BYTE " ", 0
+stringIn    BYTE 1 DUP (?),0
 randArray   QWORD 51 DUP(0) 
 targetArray QWORD 51 DUP(0)
 itemcount   QWORD ?
@@ -24,16 +25,19 @@ main proc
 	mov  RDX, OFFSET buffer1
 	call WriteString
 	call Crlf
+
 	mov  RDX, OFFSET buffer2
 	call WriteString
 	call ReadInt64
 	mov  itemcount, RAX
 	call Crlf
+
 	mov  RDX, OFFSET buffer3
 	call WriteString
 	call ReadInt64
 	mov  lowerbound, RAX
 	call Crlf
+	
 	mov  RDX, OFFSET buffer4
 	call WriteString
 	call ReadInt64
@@ -52,6 +56,18 @@ L1:
 	loop L1
 
 	mov RSI, OFFSET randArray
+	mov RCX, itemcount
+	call WriteIntegerArray
+	call Crlf
+	call Crlf
+	call ReadInt64
+
+	mov RSI, OFFSET randArray
+	mov RDI, OFFSET targetArray
+	mov RCX, itemcount
+	call ReverseIntegerArray
+
+	mov RSI, OFFSET targetArray
 	mov RCX, itemcount
 	call WriteIntegerArray
 
@@ -77,4 +93,17 @@ WIA:
 	loop WIA
 	ret
 WriteIntegerArray ENDP
+
+ReverseIntegerArray proc
+	push QWORD ptr[RSI]
+	add RSI, 8
+	loop RIA
+	pop QWORD ptr [RDI]
+	add RDI, 8
+	ret
+RIA: call ReverseIntegerArray
+	pop QWORD ptr [RDI]
+	add RDI, 8
+	ret
+ReverseIntegerArray ENDP
 end
